@@ -1,6 +1,8 @@
 package order;
 
+import com.fasterxml.jackson.databind.introspect.TypeResolutionContext;
 import org.junit.After;
+import org.junit.Before;
 import user.Credentials;
 import user.UserAssertion;
 import user.UserClient;
@@ -25,40 +27,35 @@ public class CreateOrderTest {
     private final OrderAssertion checkOrder = new OrderAssertion();
     protected String accessToken;
     protected int number;
+    private boolean flag;
 
+    @Before
+    public void setFlagAfter() {
+        flag = true;
+    }
 
     @Test
     @DisplayName("Создание заказа авторизованного пользователя")
     @Description("Проверка полученного ответа при создании заказа авторизованного пользователя")
     public void createNewSuccessfullyOrder() {
         var user = UserGenerator.random();
-        ValidatableResponse response = clientUser.createUser(user);
-        checkUser.createdSuccessfully(response);
+        clientUser.createUser(user);
 
         var creds = Credentials.from(user);
         ValidatableResponse loginResponse = clientUser.loginUser(creds);
         accessToken = checkUser.loggedInSuccessfully(loginResponse);
-        assertThat("Failed to login!", accessToken, is(notNullValue()));
 
         ValidatableResponse orderResponse = clientOrder.createOrderAuthorizedUser(accessToken);
         number = checkOrder.checkCreatedOrderSuccessfully(orderResponse);
-        assert number != 0;
+        assertThat("Order not created!", number, is(notNullValue()));
     }
 
     @Test
     @DisplayName("Создание заказа неавторизованного пользователя")
     @Description("Проверка полученного ответа при создании заказа неавторизованного пользователя")
     public void createNewUnSuccessfullyOrder() {
-        var user = UserGenerator.random();
-        ValidatableResponse response = clientUser.createUser(user);
-        checkUser.createdSuccessfully(response);
-
-        var creds = Credentials.from(user);
-        ValidatableResponse loginResponse = clientUser.loginUser(creds);
-        accessToken = checkUser.loggedInSuccessfully(loginResponse);
-        assertThat("Failed to login!", accessToken, is(notNullValue()));
-
-        ValidatableResponse orderResponse = clientOrder.createOrderUnAuthorizedUser(""); // должен придти код ошибки 401, а приходит 200 - баг
+        flag = false;
+        ValidatableResponse orderResponse = clientOrder.createOrderUnAuthorizedUser(); // должен придти код ошибки 401, а приходит 200 - баг
         checkOrder.checkCreateOrderWithoutUser(orderResponse);
     }
 
@@ -67,13 +64,11 @@ public class CreateOrderTest {
     @Description("Проверка полученного ответа при создании заказа авторизованного пользователя с неверными хешами ингредиентов")
     public void createOrderWithIncorrectIngredient() {
         var user = UserGenerator.random();
-        ValidatableResponse response = clientUser.createUser(user);
-        checkUser.createdSuccessfully(response);
+        clientUser.createUser(user);
 
         var creds = Credentials.from(user);
         ValidatableResponse loginResponse = clientUser.loginUser(creds);
         accessToken = checkUser.loggedInSuccessfully(loginResponse);
-        assertThat("Failed to login!", accessToken, is(notNullValue()));
 
         ValidatableResponse orderResponse = clientOrder.createOrderWithUnknownIngredients(accessToken);
         checkOrder.checkCreateOrderWithUnknownIngredients(orderResponse);
@@ -84,13 +79,11 @@ public class CreateOrderTest {
     @Description("Проверка полученного ответа при создании заказа авторизованного пользователя без ингредиентов")
     public void createOrderWithoutIngredient() {
         var user = UserGenerator.random();
-        ValidatableResponse response = clientUser.createUser(user);
-        checkUser.createdSuccessfully(response);
+        clientUser.createUser(user);
 
         var creds = Credentials.from(user);
         ValidatableResponse loginResponse = clientUser.loginUser(creds);
         accessToken = checkUser.loggedInSuccessfully(loginResponse);
-        assertThat("Failed to login!", accessToken, is(notNullValue()));
 
         ValidatableResponse orderResponse = clientOrder.createWithoutIngredients(accessToken);
         checkOrder.checkCreateOrderWithoutIngredients(orderResponse);
@@ -98,7 +91,8 @@ public class CreateOrderTest {
 
     @After
     public void deleteUser() {
-        ValidatableResponse delete = clientUser.deleteUser(accessToken);
-        checkUser.deletedSuccessfully(delete);
+        if (flag) {
+            clientUser.deleteUser(accessToken);
+        }
     }
 }

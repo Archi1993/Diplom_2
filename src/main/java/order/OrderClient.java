@@ -8,23 +8,24 @@ import specifications.Client;
 public class OrderClient extends Client {
     private static final String CREATE_ORDER_ENDPOINT = "/api/orders";
     private static final String GET_ORDER_ENDPOINT = "/api/orders";
+    private static final String allCorrectIngredient = "{\n\"ingredients\": [\"61c0c5a71d1f82001bdaaa6d\",\"61c0c5a71d1f82001bdaaa70\",\"61c0c5a71d1f82001bdaaa73\"]\n}";
+    private static final String allIncorrectIngredient = "{\n\"ingredients\": [\"ffffffa71d1f82001bdaaa6d\",\"91c0c5a444f82001bdaaa70\",\"91c0c5a333f82001bdaaa73\"]\n}";
 
 
     @Step("Создание заказа авторизированного пользователя")
     public ValidatableResponse createOrderAuthorizedUser(String accessToken) {
         return spec()
                 .header("Authorization", accessToken)
-                .body("{\n\"ingredients\": [\"61c0c5a71d1f82001bdaaa6d\",\"61c0c5a71d1f82001bdaaa70\",\"61c0c5a71d1f82001bdaaa73\"]\n}")
+                .body(allCorrectIngredient)
                 .when()
                 .post(CREATE_ORDER_ENDPOINT)
                 .then().log().all();
     }
 
     @Step("Создание заказа неавторизированного пользователя")
-    public ValidatableResponse createOrderUnAuthorizedUser(String accessToken) {
+    public ValidatableResponse createOrderUnAuthorizedUser() {
         return spec()
-                .header("Authorization", accessToken)
-                .body("{\n\"ingredients\": [\"61c0c5a71d1f82001bdaaa6d\",\"61c0c5a71d1f82001bdaaa70\",\"61c0c5a71d1f82001bdaaa73\"]\n}")
+                .body(allCorrectIngredient)
                 .when()
                 .post(CREATE_ORDER_ENDPOINT)
                 .then().log().all();
@@ -35,7 +36,7 @@ public class OrderClient extends Client {
         return spec()
                 .header("Authorization", accessToken)
                 .when()
-                .body("{\n\"ingredients\": [\"ffffffa71d1f82001bdaaa6d\",\"91c0c5a444f82001bdaaa70\",\"91c0c5a333f82001bdaaa73\"]\n}")
+                .body(allIncorrectIngredient)
                 .post(CREATE_ORDER_ENDPOINT)
                 .then().log().all();
     }
@@ -50,7 +51,7 @@ public class OrderClient extends Client {
     }
 
     @Step("Получение заказа авторизованного пользователя")
-    public ValidatableResponse getFamousUserOrders(String accessToken) {
+    public ValidatableResponse getAuthorizedUserOrders(String accessToken) {
         return spec()
                 .header("Authorization", accessToken)
                 .when()
@@ -59,9 +60,8 @@ public class OrderClient extends Client {
     }
 
     @Step("Получение заказа неавторизованного пользователя")
-    public ValidatableResponse getUnknownUserOrders(String accessToken) {
+    public ValidatableResponse getUnknownUserOrders() {
         return spec()
-                .header("Authorization", accessToken)
                 .when()
                 .get(GET_ORDER_ENDPOINT)
                 .then().log().all();

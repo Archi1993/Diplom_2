@@ -16,7 +16,6 @@ public class UserAuthorizationTest {
     protected String accessToken;
 
 
-
     @Test
     @DisplayName("Успешная авторизация пользователя")
     @Description("Проверка полученного ответа при успешной авторизации пользователя")
@@ -43,8 +42,8 @@ public class UserAuthorizationTest {
         ValidatableResponse badLoginResponse = clientUser.loginUser(creds);
         checkUser.loggedNotSuccessfully(badLoginResponse);
 
-        var incompleteСreds = Credentials.from(user);
-        ValidatableResponse loginResponse = clientUser.loginUser(incompleteСreds);
+        var incompleteCreds = Credentials.from(user); //Требуется корректная авторизация пользователя, для его успешного удаления после теста
+        ValidatableResponse loginResponse = clientUser.loginUser(incompleteCreds);
         accessToken = checkUser.loggedInSuccessfully(loginResponse);
         assertThat("Failed to login!", accessToken, is(notNullValue()));
     }
@@ -61,8 +60,8 @@ public class UserAuthorizationTest {
         ValidatableResponse badLoginResponse = clientUser.loginUser(creds);
         checkUser.loggedNotSuccessfully(badLoginResponse);
 
-        var incompleteСreds = Credentials.from(user);
-        ValidatableResponse loginResponse = clientUser.loginUser(incompleteСreds);
+        var incompleteCreds = Credentials.from(user); //Требуется корректная авторизация пользователя, для его успешного удаления после теста
+        ValidatableResponse loginResponse = clientUser.loginUser(incompleteCreds);
         accessToken = checkUser.loggedInSuccessfully(loginResponse);
         assertThat("Failed to login!", accessToken, is(notNullValue()));
     }

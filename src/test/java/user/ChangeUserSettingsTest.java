@@ -105,7 +105,7 @@ public class ChangeUserSettingsTest {
         ValidatableResponse response = clientUser.createUser(user);
         checkUser.createdSuccessfully(response);
 
-        var creds = Credentials.from(user);
+        var creds = Credentials.from(user); //Требуется корректная авторизация пользователя, для его успешного удаления после теста
         ValidatableResponse loginResponse = clientUser.loginUser(creds);
         accessToken = checkUser.loggedInSuccessfully(loginResponse);
         assertThat("Failed to login!", accessToken, is(notNullValue()));
@@ -125,7 +125,7 @@ public class ChangeUserSettingsTest {
         ValidatableResponse response = clientUser.createUser(user);
         checkUser.createdSuccessfully(response);
 
-        var creds = Credentials.from(user);
+        var creds = Credentials.from(user); //Требуется корректная авторизация пользователя, для его успешного удаления после теста
         ValidatableResponse loginResponse = clientUser.loginUser(creds);
         accessToken = checkUser.loggedInSuccessfully(loginResponse);
         assertThat("Failed to login!", accessToken, is(notNullValue()));
@@ -145,7 +145,7 @@ public class ChangeUserSettingsTest {
         ValidatableResponse response = clientUser.createUser(user);
         checkUser.createdSuccessfully(response);
 
-        var creds = Credentials.from(user);
+        var creds = Credentials.from(user); //Требуется корректная авторизация пользователя, для его успешного удаления после теста
         ValidatableResponse loginResponse = clientUser.loginUser(creds);
         accessToken = checkUser.loggedInSuccessfully(loginResponse);
         assertThat("Failed to login!", accessToken, is(notNullValue()));

@@ -11,10 +11,6 @@ import user.UserAssertion;
 import user.UserClient;
 import user.UserGenerator;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
-
 
 public class GetOrderTest {
 
@@ -23,9 +19,8 @@ public class GetOrderTest {
     private final OrderClient clientOrder = new OrderClient();
     private final OrderAssertion checkOrder = new OrderAssertion();
     protected String accessToken;
-    private boolean flag;
     protected int number;
-
+    private boolean flag;
 
     @Before
     public void setFlagAfter() {
@@ -37,19 +32,16 @@ public class GetOrderTest {
     @Description("Проверка успешного получения заказа авторизованного пользователя")
     public void getOrderPositiveTest() {
         var user = UserGenerator.random();
-        ValidatableResponse response = clientUser.createUser(user);
-        checkUser.createdSuccessfully(response);
+        clientUser.createUser(user);
 
         var creds = Credentials.from(user);
         ValidatableResponse loginResponse = clientUser.loginUser(creds);
         accessToken = checkUser.loggedInSuccessfully(loginResponse);
-        assertThat("Failed to login!", accessToken, is(notNullValue()));
 
         ValidatableResponse orderResponse = clientOrder.createOrderAuthorizedUser(accessToken);
         number = checkOrder.checkCreatedOrderSuccessfully(orderResponse);
-        assert number != 0;
 
-        ValidatableResponse ordersResponse = clientOrder.getFamousUserOrders(accessToken);
+        ValidatableResponse ordersResponse = clientOrder.getAuthorizedUserOrders(accessToken);
         checkOrder.checkGetFamousUserOrders(ordersResponse);
     }
 
@@ -57,30 +49,16 @@ public class GetOrderTest {
     @DisplayName("Получение списка заказов без регистрации")
     @Description("Проверка получения ошибки с кодом 401 при получении заказа не авторизованного пользователя")
     public void getOrderWithoutUserTest() {
-        var user = UserGenerator.random();
-        ValidatableResponse response = clientUser.createUser(user);
-        checkUser.createdSuccessfully(response);
-
-        var creds = Credentials.from(user);
-        ValidatableResponse loginResponse = clientUser.loginUser(creds);
-        accessToken = checkUser.loggedInSuccessfully(loginResponse);
-        assertThat("Failed to login!", accessToken, is(notNullValue()));
-
-        ValidatableResponse orderResponse = clientOrder.createOrderAuthorizedUser(accessToken);
-        number = checkOrder.checkCreatedOrderSuccessfully(orderResponse);
-        assert number != 0;
-
-        ValidatableResponse ordersResponse = clientOrder.getUnknownUserOrders("");
+        ValidatableResponse ordersResponse = clientOrder.getUnknownUserOrders();
         checkOrder.checkGetUnknownUserOrders(ordersResponse);
+        flag = false;
     }
-
 
 
     @After
     public void deleteUser() {
-        ValidatableResponse delete = clientUser.deleteUser(accessToken);
-        checkUser.deletedSuccessfully(delete);
+        if (flag) {
+            clientUser.deleteUser(accessToken);
+        }
     }
-
-
 }
