@@ -1,21 +1,23 @@
 package order;
 
-public class Order { //оставил этот класс на всякий случай, в реальном проекте, возможно в будущем он пригодится
+import java.util.List;
 
-    private String ingredients;
+public class Order {
 
-    public Order(String ingredients) {
+    private List<String> ingredients;
+
+    public Order(List<String> ingredients) {
         this.ingredients = ingredients;
     }
 
     public Order() {
     }
 
-    public String getIngredients() {
+    public List<String> getIngredients() {
         return ingredients;
     }
 
-    public void setIngredients(String ingredients) {
+    public void setIngredients(List<String> ingredients) {
         this.ingredients = ingredients;
     }
 }

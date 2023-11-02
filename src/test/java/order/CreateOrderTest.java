@@ -1,6 +1,5 @@
 package order;
 
-import com.fasterxml.jackson.databind.introspect.TypeResolutionContext;
 import org.junit.After;
 import org.junit.Before;
 import user.Credentials;
@@ -45,7 +44,8 @@ public class CreateOrderTest {
         ValidatableResponse loginResponse = clientUser.loginUser(creds);
         accessToken = checkUser.loggedInSuccessfully(loginResponse);
 
-        ValidatableResponse orderResponse = clientOrder.createOrderAuthorizedUser(accessToken);
+        var order = OrderData.ORDER_WITH_ALL_CORRECT_INGREDIENTS;
+        ValidatableResponse orderResponse = clientOrder.createOrderAuthorizedUser(accessToken, order);
         number = checkOrder.checkCreatedOrderSuccessfully(orderResponse);
         assertThat("Order not created!", number, is(notNullValue()));
     }
@@ -55,7 +55,9 @@ public class CreateOrderTest {
     @Description("Проверка полученного ответа при создании заказа неавторизованного пользователя")
     public void createNewUnSuccessfullyOrder() {
         flag = false;
-        ValidatableResponse orderResponse = clientOrder.createOrderUnAuthorizedUser(); // должен придти код ошибки 401, а приходит 200 - баг
+
+        var order = OrderData.ORDER_WITH_ALL_CORRECT_INGREDIENTS;
+        ValidatableResponse orderResponse = clientOrder.createOrderUnAuthorizedUser(order); // должен придти код ошибки 401, а приходит 200 - баг
         checkOrder.checkCreateOrderWithoutUser(orderResponse);
     }
 
@@ -70,7 +72,8 @@ public class CreateOrderTest {
         ValidatableResponse loginResponse = clientUser.loginUser(creds);
         accessToken = checkUser.loggedInSuccessfully(loginResponse);
 
-        ValidatableResponse orderResponse = clientOrder.createOrderWithUnknownIngredients(accessToken);
+        var order = OrderData.ORDER_WITH_ALL_INCORRECT_INGREDIENTS;
+        ValidatableResponse orderResponse = clientOrder.createOrderWithUnknownIngredients(accessToken, order);
         checkOrder.checkCreateOrderWithUnknownIngredients(orderResponse);
     }
 

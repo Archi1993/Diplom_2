@@ -11,6 +11,8 @@ import user.UserAssertion;
 import user.UserClient;
 import user.UserGenerator;
 
+import java.util.List;
+
 
 public class GetOrderTest {
 
@@ -38,7 +40,8 @@ public class GetOrderTest {
         ValidatableResponse loginResponse = clientUser.loginUser(creds);
         accessToken = checkUser.loggedInSuccessfully(loginResponse);
 
-        ValidatableResponse orderResponse = clientOrder.createOrderAuthorizedUser(accessToken);
+        var order = OrderData.ORDER_WITH_ALL_CORRECT_INGREDIENTS;
+        ValidatableResponse orderResponse = clientOrder.createOrderAuthorizedUser(accessToken, order);
         number = checkOrder.checkCreatedOrderSuccessfully(orderResponse);
 
         ValidatableResponse ordersResponse = clientOrder.getAuthorizedUserOrders(accessToken);
@@ -53,7 +56,6 @@ public class GetOrderTest {
         checkOrder.checkGetUnknownUserOrders(ordersResponse);
         flag = false;
     }
-
 
     @After
     public void deleteUser() {
