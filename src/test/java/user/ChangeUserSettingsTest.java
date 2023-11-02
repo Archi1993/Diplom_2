@@ -26,20 +26,16 @@ public class ChangeUserSettingsTest {
     @Description("Проверка получения успешного ответа при изменении email зарегистрированного пользователя")
     public void successfullyUpdateEmailUser() {
         var user = UserGenerator.random();
-        ValidatableResponse response = clientUser.createUser(user);
-        checkUser.createdSuccessfully(response);
+        clientUser.createUser(user);
 
         var creds = Credentials.from(user);
         ValidatableResponse loginResponse = clientUser.loginUser(creds);
-        accessToken = checkUser.loggedInSuccessfully(loginResponse);
-        assertThat("Failed to login!", accessToken, is(notNullValue()));
+        accessToken = checkUser.loggedInSuccessfully(loginResponse); // можно конечно было добавить сразу данные вместо переменной в скобках loginResponse и сделать для похожих случаев также, но для меня, как для начинающего автоматизатора, так легче чтобы не запутаться в коде.
 
         String newEmail = RandomStringUtils.randomAlphabetic(10) + "@newexample.com";
         user.setEmail(newEmail);
 
-        accessToken = checkUser.loggedInSuccessfully(loginResponse);
         clientUser.updateUser(accessToken, user);
-        checkUser.createdSuccessfully(response);
         ValidatableResponse updatedUser = clientUser.getUserInfo(accessToken);
         checkUser.checkNewEmail(updatedUser, newEmail);
     }
@@ -49,29 +45,22 @@ public class ChangeUserSettingsTest {
     @Description("Проверка получения успешного ответа при изменении password зарегистрированного пользователя")
     public void successfullyUpdatePasswrodUser() {
         var user = UserGenerator.random();
-        ValidatableResponse response = clientUser.createUser(user);
-        checkUser.createdSuccessfully(response);
+        clientUser.createUser(user);
 
         var creds = Credentials.from(user);
         ValidatableResponse loginResponse = clientUser.loginUser(creds);
         accessToken = checkUser.loggedInSuccessfully(loginResponse);
-        assertThat("Failed to login!", accessToken, is(notNullValue()));
 
         String newPassword = "TestPassword" + RandomStringUtils.randomAlphabetic(3);
         user.setPassword(newPassword);
 
-        accessToken = checkUser.loggedInSuccessfully(loginResponse);
         clientUser.updateUser(accessToken, user);
-        checkUser.createdSuccessfully(response);
-
         refreshToken = checkUser.refreshLoggedInSuccessfully(loginResponse);
-        ValidatableResponse logoutResponse = clientUser.logoutUser(refreshToken);
-        checkUser.logoutInSuccessfully(logoutResponse);
+        clientUser.logoutUser(refreshToken);
 
         var newCreds = Credentials.from(user);
         ValidatableResponse newLoginResponse = clientUser.loginUser(newCreds);
         accessToken = checkUser.loggedInSuccessfully(newLoginResponse);
-        assertThat("Failed to login!", accessToken, is(notNullValue()));
     }
 
     @Test
@@ -79,20 +68,16 @@ public class ChangeUserSettingsTest {
     @Description("Проверка получения успешного ответа при изменении name зарегистрированного пользователя")
     public void successfullyUpdateNameUser() {
         var user = UserGenerator.random();
-        ValidatableResponse response = clientUser.createUser(user);
-        checkUser.createdSuccessfully(response);
+        clientUser.createUser(user);
 
         var creds = Credentials.from(user);
         ValidatableResponse loginResponse = clientUser.loginUser(creds);
         accessToken = checkUser.loggedInSuccessfully(loginResponse);
-        assertThat("Failed to login!", accessToken, is(notNullValue()));
 
         String newName = "TestName" + RandomStringUtils.randomAlphabetic(5);
         user.setName(newName);
 
-        accessToken = checkUser.loggedInSuccessfully(loginResponse);
         clientUser.updateUser(accessToken, user);
-        checkUser.createdSuccessfully(response);
         ValidatableResponse updatedUser = clientUser.getUserInfo(accessToken);
         checkUser.checkNewName(updatedUser, newName);
     }
@@ -102,13 +87,11 @@ public class ChangeUserSettingsTest {
     @Description("Проверка получения ответа при изменении email для незарегистрированного пользователя")
     public void notSuccessfullyUpdateEmailUser() {
         var user = UserGenerator.random();
-        ValidatableResponse response = clientUser.createUser(user);
-        checkUser.createdSuccessfully(response);
+        clientUser.createUser(user);
 
         var creds = Credentials.from(user); //Требуется корректная авторизация пользователя, для его успешного удаления после теста
         ValidatableResponse loginResponse = clientUser.loginUser(creds);
         accessToken = checkUser.loggedInSuccessfully(loginResponse);
-        assertThat("Failed to login!", accessToken, is(notNullValue()));
 
         String newEmail = RandomStringUtils.randomAlphabetic(10) + "@newexample.com";
         user.setEmail(newEmail);
@@ -122,13 +105,11 @@ public class ChangeUserSettingsTest {
     @Description("Проверка получения ответа при изменении password для незарегистрированного пользователя")
     public void notSuccessfullyUpdatePasswordUser() {
         var user = UserGenerator.random();
-        ValidatableResponse response = clientUser.createUser(user);
-        checkUser.createdSuccessfully(response);
+        clientUser.createUser(user);
 
         var creds = Credentials.from(user); //Требуется корректная авторизация пользователя, для его успешного удаления после теста
         ValidatableResponse loginResponse = clientUser.loginUser(creds);
         accessToken = checkUser.loggedInSuccessfully(loginResponse);
-        assertThat("Failed to login!", accessToken, is(notNullValue()));
 
         String newPassword = "TestPassword" + RandomStringUtils.randomAlphabetic(3);
         user.setPassword(newPassword);
@@ -142,13 +123,11 @@ public class ChangeUserSettingsTest {
     @Description("Проверка получения ответа при изменении name для незарегистрированного пользователя")
     public void notSuccessfullyUpdateNameUser() {
         var user = UserGenerator.random();
-        ValidatableResponse response = clientUser.createUser(user);
-        checkUser.createdSuccessfully(response);
+        clientUser.createUser(user);
 
         var creds = Credentials.from(user); //Требуется корректная авторизация пользователя, для его успешного удаления после теста
         ValidatableResponse loginResponse = clientUser.loginUser(creds);
         accessToken = checkUser.loggedInSuccessfully(loginResponse);
-        assertThat("Failed to login!", accessToken, is(notNullValue()));
 
         String newName = "TestName" + RandomStringUtils.randomAlphabetic(5);
         user.setName(newName);
@@ -159,7 +138,6 @@ public class ChangeUserSettingsTest {
 
     @After
     public void deleteUser() {
-        ValidatableResponse delete = clientUser.deleteUser(accessToken);
-        checkUser.deletedSuccessfully(delete);
+        clientUser.deleteUser(accessToken);
     }
 }

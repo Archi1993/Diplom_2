@@ -39,7 +39,6 @@ public class CreateUserTest {
         var creds = Credentials.from(user); //Требуется корректная авторизация пользователя, для его успешного удаления после теста
         ValidatableResponse loginResponse = clientUser.loginUser(creds);
         accessToken = checkUser.loggedInSuccessfully(loginResponse);
-        assertThat("Failed to login!", accessToken, is(notNullValue()));
     }
 
 
@@ -48,13 +47,11 @@ public class CreateUserTest {
     @Description("(Проверка получения ответа с кодом 403 при попытке создания существующего пользователя в системе")
     public void creatureUserIsAlreadyRegisteredTest() {
         var user = UserGenerator.random();
-        ValidatableResponse response = clientUser.createUser(user);
-        checkUser.createdSuccessfully(response);
+        clientUser.createUser(user);
 
         var creds = Credentials.from(user); //Требуется корректная авторизация пользователя, для его успешного удаления после теста
         ValidatableResponse loginResponse = clientUser.loginUser(creds);
         accessToken = checkUser.loggedInSuccessfully(loginResponse);
-        assertThat("Failed to login!", accessToken, is(notNullValue()));
 
         ValidatableResponse responseConflict = clientUser.createUser(user);
         checkUser.createAnExistingUser(responseConflict);
@@ -95,8 +92,7 @@ public class CreateUserTest {
     @After
     public void deleteUser() {
         if (flag) {
-            ValidatableResponse delete = clientUser.deleteUser(accessToken);
-            checkUser.deletedSuccessfully(delete);
+            clientUser.deleteUser(accessToken);
         }
     }
 

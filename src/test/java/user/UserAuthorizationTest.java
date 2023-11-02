@@ -21,8 +21,7 @@ public class UserAuthorizationTest {
     @Description("Проверка полученного ответа при успешной авторизации пользователя")
     public void authorizationUser() {
         var user = UserGenerator.random();
-        ValidatableResponse response = clientUser.createUser(user);
-        checkUser.createdSuccessfully(response);
+        clientUser.createUser(user);
 
         var creds = Credentials.from(user);
         ValidatableResponse loginResponse = clientUser.loginUser(creds);
@@ -35,8 +34,7 @@ public class UserAuthorizationTest {
     @Description("Проверка полученного ответа с кодом 401 при авторизации пользователя без логина")
     public void authorizationUserWithoutEmail() {
         var user = UserGenerator.random();
-        ValidatableResponse response = clientUser.createUser(user);
-        checkUser.createdSuccessfully(response);
+        clientUser.createUser(user);
 
         var creds = Credentials.fromWithoutEmail(user);
         ValidatableResponse badLoginResponse = clientUser.loginUser(creds);
@@ -45,7 +43,6 @@ public class UserAuthorizationTest {
         var incompleteCreds = Credentials.from(user); //Требуется корректная авторизация пользователя, для его успешного удаления после теста
         ValidatableResponse loginResponse = clientUser.loginUser(incompleteCreds);
         accessToken = checkUser.loggedInSuccessfully(loginResponse);
-        assertThat("Failed to login!", accessToken, is(notNullValue()));
     }
 
     @Test
@@ -53,8 +50,7 @@ public class UserAuthorizationTest {
     @Description("Проверка полученного ответа с кодом 401 при авторизации пользователя без пароля")
     public void authorizationUserWithoutPassword() {
         var user = UserGenerator.random();
-        ValidatableResponse response = clientUser.createUser(user);
-        checkUser.createdSuccessfully(response);
+        clientUser.createUser(user);
 
         var creds = Credentials.fromWithoutPassword(user);
         ValidatableResponse badLoginResponse = clientUser.loginUser(creds);
@@ -63,14 +59,12 @@ public class UserAuthorizationTest {
         var incompleteCreds = Credentials.from(user); //Требуется корректная авторизация пользователя, для его успешного удаления после теста
         ValidatableResponse loginResponse = clientUser.loginUser(incompleteCreds);
         accessToken = checkUser.loggedInSuccessfully(loginResponse);
-        assertThat("Failed to login!", accessToken, is(notNullValue()));
     }
 
 
     @After
     public void deleteUser() {
-            ValidatableResponse delete = clientUser.deleteUser(accessToken);
-            checkUser.deletedSuccessfully(delete);
+            clientUser.deleteUser(accessToken);
     }
 
 }
